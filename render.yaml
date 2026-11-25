@@ -1,0 +1,80 @@
+# Blueprint do Render para o petshop.
+# Fica na raiz do repositório petshop_infra (substitui o docker-compose no Render).
+# Cada serviço é buildado a partir do Dockerfile do próprio repositório.
+
+services:
+  - type: web
+    name: petshop-usuarios
+    runtime: docker
+    plan: free
+    repo: https://github.com/petshop-microservicos/petshop_usuarios
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: PORT
+        value: "8080"
+
+  - type: web
+    name: petshop-animais-tutores
+    runtime: docker
+    plan: free
+    repo: https://github.com/petshop-microservicos/petshop_animais_tutores
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: PORT
+        value: "8080"
+
+  - type: web
+    name: petshop-agendamentos
+    runtime: docker
+    plan: free
+    repo: https://github.com/petshop-microservicos/petshop_agendamentos
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: PORT
+        value: "8080"
+      # No plano free não existe rede privada: usa a URL pública do outro serviço.
+      # Confira a URL real no painel depois do primeiro deploy.
+      - key: Servicos__AnimaisTutores__BaseUrl
+        value: https://petshop-animais-tutores.onrender.com/
+
+  - type: web
+    name: petshop-estoque
+    runtime: docker
+    plan: free
+    repo: https://github.com/petshop-microservicos/petshop_estoque
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: PORT
+        value: "8080"
+
+  - type: web
+    name: petshop-comercial
+    runtime: docker
+    plan: free
+    repo: https://github.com/petshop-microservicos/petshop_comercial
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: PORT
+        value: "8080"
+      - key: Servicos__Estoque__BaseUrl
+        value: https://petshop-estoque.onrender.com/
